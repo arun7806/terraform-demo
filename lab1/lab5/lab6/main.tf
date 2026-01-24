@@ -1,8 +1,7 @@
 resource "azurerm_resource_group" "rg" {
   name     = "arun-rg"
-  location = "centralindia"
+  location = "central india"
 }
-
 resource "azurerm_virtual_network" "vnet" {
   name                = "arun-vnet"
   address_space       = ["10.0.0.0/16"]
@@ -16,12 +15,6 @@ resource "azurerm_subnet" "subnet" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 }
-resource "azurerm_public_ip" "pip" {
-  name                = "vm-public-ip"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  allocation_method   = "Static"
-}
 
 resource "azurerm_network_interface" "nic" {
   name                = "vm-nic"
@@ -32,17 +25,16 @@ resource "azurerm_network_interface" "nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.pip.id
   }
 }
-  resource "azurerm_linux_virtual_machine" "vm" {
+resource "azurerm_linux_virtual_machine" "vm" {
   name                = "arun-linux-vm"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  size                = "Standard_B2s"
+  size                = "Standard_D2s_v3"
 
   admin_username = "azureuser"
-  admin_password = "Password@12345"
+  admin_password = "StrongPassword@123"
   disable_password_authentication = false
 
   network_interface_ids = [
