@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+
+metadata:
+  name: my-simply
+  labels:
+    app: my-app
+
+spec:
+  replicas: 5
+
+  selector:
+    matchLabels:
+      project: calculator
+
+  template:
+    metadata:
+      labels:
+        project: calculator
+
+    spec:
+      containers:
+      - name: my-container
+        image: alpine
+    
