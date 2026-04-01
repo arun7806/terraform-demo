@@ -16,9 +16,17 @@ spec:
     spec:
       containers:
       - name: my-container
-        image: nginx 3.0
+        image: nginx:latest
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: my-config-volume
+          mountPath: /etc/app
+
+      volumes:
+      - name: my-config-volume
+        configMap:
+          name: simplybyte
 
 ---
 apiVersion: v1
@@ -32,6 +40,6 @@ spec:
   selector:
     app: my-app
   ports:
-    - port: 80
-      targetPort: 80
-      nodePort: 30007
+  - port: 80
+    targetPort: 80
+    nodePort: 30007
