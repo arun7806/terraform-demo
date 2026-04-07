@@ -1,14 +1,10 @@
 apiVersion: v1
 kind: Pod
-
 metadata:
-  name: my-simply
-  labels:
-    project: calculator
-
+  name: my-nginx-pod
 spec:
   containers:
-  - name: my-container
-    image: alpine
-    
-
+  - name: nginx-container
+    image: nginx
+    ports:
+    - containerPort: 8080
