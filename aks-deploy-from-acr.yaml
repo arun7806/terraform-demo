@@ -1,55 +1,33 @@
-trigger:
-- main
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: springboot-app
+  template:
+    metadata:
+      labels:
+        app: springboot-app
+    spec:
+      containers:
+      - name: springboot-app
+        image: javaapplication.azurecr.io/springbootjavaapplication:$(Build.BuildId)
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8085
 
-pool:
-  vmImage: 'ubuntu-latest'
-
-variables:
-  azureSubscription: 'azure-service-connection'
-  resourceGroupName: 'arun1-rg'
-  aksClusterName: 'javacluster'
-  acrName: 'myacrname'
-  imageRepository: 'springboot-app'
-  imageTag: 'latest'
-  namespace: 'default'
-  deploymentName: 'springboot-deployment'
-  containerName: 'springboot-container'
-
-stages:
-- stage: DeployToAKS
-  displayName: 'Deploy to AKS'
-  jobs:
-  - job: Deploy
-    displayName: 'Deploy image from ACR to AKS'
-    steps:
-
-    - task: AzureCLI@2
-      displayName: 'Get AKS credentials'
-      inputs:
-        azureSubscription: '$(azureSubscription)'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          az aks get-credentials \
-            --resource-group $(resourceGroupName) \
-            --name $(aksClusterName) \
-            --overwrite-existing
-
-          kubectl get nodes
-
-    - task: AzureCLI@2
-      displayName: 'Deploy image from ACR to AKS'
-      inputs:
-        azureSubscription: '$(azureSubscription)'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          IMAGE_NAME=$(acrName).azurecr.io/$(imageRepository):$(imageTag)
-
-          echo "Using image: $IMAGE_NAME"
-
-          kubectl set image deployment/$(deploymentName) \
-            $(containerName)=$IMAGE_NAME \
-            -n $(namespace)
-
-          kubectl rollout status deployment/$(deploymentName) -n $(namespace)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: springboot-app
+  ports:
+  - port: 80
+    targetPort: 8085
