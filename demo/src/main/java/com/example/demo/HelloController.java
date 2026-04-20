@@ -8,11 +8,11 @@ public class HelloController {
 
     @GetMapping("/")
     public String home() {
-        return "Spring Boot running in VS Code 🚀";
+        return "Spring Boot running in VS Code 🚀 hi iam arun";
     }
 
     @GetMapping("/hello")
     public String hello() {
-        return "Hello Arun Kumar!";
+        return "Hello Arun!";
     }
 }
